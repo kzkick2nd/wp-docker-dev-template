@@ -1,0 +1,58 @@
+#!/bin/bash
+cd `dirname $0`
+cd "../wp-core"
+
+echo "[START] Setup wp-core for WP-DockerDEV."
+
+if ! type mysql >/dev/null 2>&1; then
+  echo "[ERROR] mysql is not found. => brew install mysql" 1>&2
+  exit 1
+fi
+
+if ! type wp >/dev/null 2>&1; then
+  echo "[ERROR] WP-CLI is not found. => brew install wp-cli" 1>&2
+  exit 1
+fi
+
+# 繰り返し実行時はwp-config.phpは初期化
+if [ -f ./wp-config.php ]; then
+  rm wp-config.php
+fi
+
+# コアダウンロード&設定追加
+wp core download --locale=ja
+wp config create \
+  --dbhost=127.0.0.1\
+  --dbuser=root\
+  --dbpass=root\
+  --dbname=wordpress
+
+# インポートDB
+wp db create
+
+# - if バックアップDBから復元する場合（設定も開発用に更新する）
+# wp db import ../app_dump.sql
+# wp option update home "http://localhost"
+# wp option update siteurl "http://localhost"
+# wp option update admin_email "admin@example.com"
+# - else 新規でインストールする場合
+wp core install \
+  --url=localhost \
+  --title='Docker' \
+  --admin_user=admin \
+  --admin_password=Passw0rd! \
+  --admin_email=admin@example.com
+wp theme activate development
+# - end
+
+# プラグイン追加
+wp plugin install akismet \
+                  siteguard
+
+# Docker内部ネットワーク用のhost名に変更
+wp config set DB_HOST db
+
+# 初回生成できていないhtaccessをcp
+cp ../wp.htaccess ./.htaccess
+
+echo "[END] Setup is finished."

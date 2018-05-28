@@ -1,0 +1,10 @@
+.gitignore
+.gitkeep
+.git-ftp-ignore
+
+*.sql
+docker-compose.yml
+dockerfiles/*
+
+logs/*
+README.md
