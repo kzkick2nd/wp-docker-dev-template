@@ -2,15 +2,15 @@
 cd `dirname $0`
 cd "../wp-core"
 
-echo "[START] Setup wp-core for WP-DockerDEV."
+echo -e "\nStart setup WordPress on Docker\n"
 
 if ! type mysql >/dev/null 2>&1; then
-  echo "[ERROR] mysql is not found. => brew install mysql" 1>&2
+  echo "  mysql command is required => brew install mysql" 1>&2
   exit 1
 fi
 
 if ! type wp >/dev/null 2>&1; then
-  echo "[ERROR] WP-CLI is not found. => brew install wp-cli" 1>&2
+  echo "  WP-CLI is required. => brew install wp-cli" 1>&2
   exit 1
 fi
 
@@ -42,12 +42,12 @@ wp core install \
   --admin_user=admin \
   --admin_password=Passw0rd! \
   --admin_email=admin@example.com
-wp theme activate development
+wp theme activate development-theme
 # - end
 
 # プラグイン追加
-wp plugin install akismet \
-                  siteguard
+# wp plugin install akismet \
+                  # siteguard
 
 # Docker内部ネットワーク用のhost名に変更
 wp config set DB_HOST db
@@ -55,4 +55,4 @@ wp config set DB_HOST db
 # 初回生成できていないhtaccessをcp
 cp ../wp.htaccess ./.htaccess
 
-echo "[END] Setup is finished."
+echo -e "\nSetup is finished. Happy Hacking!\"
